@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,7 +14,11 @@ namespace patentrename
 {
     public partial class Form1 : Form
     {
-        String directoryPath = "";
+        string directoryPath = "";
+        string prefix = "";
+        string endfix = "";
+        int mDelay = 1000;
+
         public Form1()
         {
             InitializeComponent();
@@ -29,22 +34,25 @@ namespace patentrename
                 return;
             }
 
+            prefix = prefixTb.Text;
+            endfix = endfixTb.Text;
+
+            if (prefix.Equals("") && endfix.Equals(""))
+            {
+                MessageBox.Show("Would prifix or endfix empty?");
+            }
+
             string path = default_str + directoryPathTb.Text;
             handleDirectory(directoryPath);
+
+            MessageBox.Show("The Work Done");
+            runBt.Enabled = false;
         }
 
         public void handleDirectory(string path)
         {
             DirectoryInfo d = new DirectoryInfo(path);
             FileInfo[] files = d.GetFiles();
-
-            string prefix = prefixTb.Text;
-            string endfix = endfixTb.Text;
-
-            if(prefix.Equals("") && endfix.Equals(""))
-            {
-                MessageBox.Show("Would Empty prifix or endfix?");
-            }
 
             processFile(files, prefix, endfix);
 
@@ -58,8 +66,8 @@ namespace patentrename
             foreach (FileInfo f in fileNames)
             {
                 string fileNameWithoutExt = Path.GetFileNameWithoutExtension(f.FullName);
-                string newFile = f.DirectoryName + "\\" +prefix + fileNameWithoutExt + endfix + f.Extension;
-
+                string newFile = f.DirectoryName + "\\" +prefix+ "_" + fileNameWithoutExt + "_"+ endfix + f.Extension;
+                Thread.Sleep(mDelay);
                 changedfileNameLb.Text = newFile;
                 originFileNameLb.Text = f.FullName;
                 File.Move(f.FullName, newFile);
